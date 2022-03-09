@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/miCreateFaculty"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="@string/CreateFacultyText"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/miAddGroup"
+        android:title="@string/MenuAddGroupText"
+        android:visible="true" />
+    <item
+        android:id="@+id/miDeleteFaculty"
+        android:title="@string/DeleteFacultyText" />
+    <item
+        android:id="@+id/miAbout"
+        android:title="@string/AboutText" />
+    <item
+        android:id="@+id/miExit"
+        android:title="@string/ExitAppText" />
+</menu>

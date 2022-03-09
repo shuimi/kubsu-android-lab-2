@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">android-lab-2</string>
+    <string name="CreateFacultyText">Создать факультет</string>
+    <string name="DeleteFacultyText">Удалить факультет</string>
+    <string name="ExitAppText">Выход</string>
+    <string name="AboutText">О программе</string>
+    <string name="FacultyNameHint">Название</string>
+    <string name="FacultyInputCancelText">Отмена</string>
+    <string name="FacultyInputAcceptText">Подтвердить</string>
+    <string name="MenuAddGroupText">Добавить группу</string>
+    <string name="MenuAddStudentText">Добавить студента</string>
+    <string name="MenuDeleteAllStudents">Удалить всех</string>
+    <string name="StudentDetailsNameText">Имя</string>
+    <string name="StudentDetailsLastNameText">Фамилия</string>
+    <string name="StudentDetailsSNameText">Отчество</string>
+    <string name="StudentDetailsBirthDate">Дата рождения</string>
+    <string name="StudentDetailsEditText">Подтвердить</string>
+    <string name="StudentDetailsCancelText">Отмена</string>
+</resources>
