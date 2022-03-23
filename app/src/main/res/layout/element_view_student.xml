@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center|top">
+
+    <TextView
+        android:id="@+id/evsNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="12" />
+
+    <TextView
+        android:id="@+id/evsDateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="12" />
+
+    <Button
+        android:id="@+id/evsEditButton"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="6"
+        android:gravity="center"
+        app:icon="@android:drawable/ic_menu_edit"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <Button
+        android:id="@+id/evsDeleteButton"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="6"
+        android:gravity="center"
+        app:icon="@android:drawable/ic_menu_delete"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+</LinearLayout>

@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = result.getData();
                         Bundle bundle = intent.getExtras();
 
-                        Group group = (Group) bundle.getSerializable("Group");
+                        Group group = (Group) bundle.getParcelable("Group");
 
                         mFaculty.setGroup(group.getID(), group);
 
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, GroupDetailsActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Group", selectedGroup);
+        bundle.putParcelable("Group", selectedGroup);
         intent.putExtras(bundle);
 
         mActivityResultLauncher.launch(intent);

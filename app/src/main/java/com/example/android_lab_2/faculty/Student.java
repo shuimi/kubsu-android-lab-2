@@ -1,16 +1,20 @@
 package com.example.android_lab_2.faculty;
 
-import java.io.Serializable;
-import java.util.Date;
+import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Student implements Serializable {
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class Student implements Parcelable {
 
     private final long mID;
 
     private String mSurname, mFirstname, mMiddlename;
-    private Date mBirthdate;
+    private Calendar mBirthdate;
 
-    private Student(String surname, String firstname, String middlename, Date birthdate) {
+    private Student(String surname, String firstname, String middlename, Calendar birthdate) {
         mSurname = surname;
         mFirstname = firstname;
         mMiddlename = middlename;
@@ -18,7 +22,42 @@ public class Student implements Serializable {
         mID = CommonValues.getNewStudentID();
     }
 
-    public static Student Create(String surname, String firstname, String middlename, Date birthdate) {
+    protected Student(Parcel in) {
+        mID = in.readLong();
+        mSurname = in.readString();
+        mFirstname = in.readString();
+        mMiddlename = in.readString();
+        mBirthdate = Calendar.getInstance();
+        mBirthdate.setTimeInMillis(in.readLong());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(mID);
+        dest.writeString(mSurname);
+        dest.writeString(mFirstname);
+        dest.writeString(mMiddlename);
+        dest.writeLong(mBirthdate.getTimeInMillis());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Student> CREATOR = new Creator<Student>() {
+        @Override
+        public Student createFromParcel(Parcel in) {
+            return new Student(in);
+        }
+
+        @Override
+        public Student[] newArray(int size) {
+            return new Student[size];
+        }
+    };
+
+    public static Student Create(String surname, String firstname, String middlename, Calendar birthdate) {
         return new Student(surname, firstname, middlename, birthdate);
     }
 
@@ -58,16 +97,32 @@ public class Student implements Serializable {
         return mID;
     }
 
-    public Date getBirthdate() {
+    public Calendar getBirthdate() {
         return mBirthdate;
     }
 
-    public void setBirthdate(Date birthdate) {
+    public void setBirthdate(Calendar birthdate) {
         mBirthdate = birthdate;
+    }
+
+    public String getNameAndInitials() {
+        return mSurname + " " + mFirstname.charAt(0) + ". " + mMiddlename.charAt(0) + ". ";
+    }
+
+    public String getBirthDateString() {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        return format.format(mBirthdate.getTime());
     }
 
     @Override
     public String toString() {
-        return mSurname + " " + mFirstname;
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        return
+                mSurname + " " +
+                mFirstname.charAt(0) + ". " +
+                mMiddlename.charAt(0) + ". " +
+                format.format(mBirthdate.getTime());
     }
 }

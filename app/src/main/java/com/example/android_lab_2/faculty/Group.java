@@ -1,11 +1,13 @@
 package com.example.android_lab_2.faculty;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Group implements Serializable {
+public class Group implements Parcelable {
 
     private Long mID;
     private String mName;
@@ -16,6 +18,45 @@ public class Group implements Serializable {
         mStudents = new ArrayList<Student>();
         mID = CommonValues.getNewGroupID();
     }
+
+    protected Group(Parcel in) {
+        if (in.readByte() == 0) {
+            mID = null;
+        } else {
+            mID = in.readLong();
+        }
+        mName = in.readString();
+        mStudents = in.createTypedArrayList(Student.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (mID == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(mID);
+        }
+        dest.writeString(mName);
+        dest.writeTypedList(mStudents);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Group> CREATOR = new Creator<Group>() {
+        @Override
+        public Group createFromParcel(Parcel in) {
+            return new Group(in);
+        }
+
+        @Override
+        public Group[] newArray(int size) {
+            return new Group[size];
+        }
+    };
 
     public Student getStudent(Long ID) {
         for (Student student : mStudents) {

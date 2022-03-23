@@ -5,21 +5,22 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/studentEditFirstName3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/StudentDetailsNameText"
-        android:inputType="textPersonName" />
-
-    <EditText
         android:id="@+id/studentEditLastName3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/StudentDetailsLastNameText"
+        android:inputType="textPersonName"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/studentEditFirstName3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/StudentDetailsNameText"
         android:inputType="textPersonName"
         android:minHeight="48dp" />
 
@@ -33,17 +34,10 @@
         android:inputType="textPersonName"
         android:minHeight="48dp" />
 
-    <EditText
+    <CalendarView
         android:id="@+id/studentEditBirthDate3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/StudentDetailsBirthDate"
-        android:inputType="date"
-        android:minHeight="48dp"
-        android:textColorHint="#757575" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,30 +1,27 @@
 package com.example.android_lab_2;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.android_lab_2.faculty.Group;
 import com.example.android_lab_2.faculty.Student;
 
-import java.lang.reflect.Array;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 public class GroupDetailsActivity extends AppCompatActivity {
 
@@ -43,7 +40,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        mGroup = (Group) bundle.getSerializable("Group");
+        mGroup = (Group) bundle.getParcelable("Group");
         mStudents = mGroup.getStudents();
 
         mStudentsListView = findViewById(R.id.StudentsList);
@@ -57,7 +54,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
                         Intent intent = result.getData();
                         Bundle _bundle = intent.getExtras();
 
-                        Student student = (Student) _bundle.getSerializable("Student");
+                        Student student = (Student) _bundle.getParcelable("Student");
 
                         mGroup.setStudent(student.getID(), student);
 
@@ -67,6 +64,8 @@ public class GroupDetailsActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    ((StudentListAdapter)mStudentsListView.getAdapter())
+                            .notifyDataSetChanged();
                 }
         );
 
@@ -74,10 +73,10 @@ public class GroupDetailsActivity extends AppCompatActivity {
         setTitle(mGroup.getName());
     }
 
-    private void createStudent(String firstName, String secondName, String lastName, String date) throws ParseException {
+    private void createStudent(String firstName, String secondName, String lastName, Long date) {
 
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date birthDate = format.parse(date);
+        Calendar birthDate = Calendar.getInstance();
+        birthDate.setTimeInMillis(date);
 
         Student student = Student.Create(
                 firstName,
@@ -87,7 +86,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
         );
 
         mStudents.add(student);
-        ((ArrayAdapter) mStudentsListView.getAdapter()).notifyDataSetChanged();
+        ((StudentListAdapter) mStudentsListView.getAdapter()).notifyDataSetChanged();
         updateStudentsList();
     }
 
@@ -103,6 +102,15 @@ public class GroupDetailsActivity extends AppCompatActivity {
                 null
         );
 
+        CalendarView studentBirthDateNameInput = dialogView
+                .findViewById(R.id.studentEditBirthDate3);
+
+        studentBirthDateNameInput.setOnDateChangeListener((_view, year, month, day) -> {
+            Calendar c = Calendar.getInstance();
+            c.set(year, month, day);
+            studentBirthDateNameInput.setDate(c.getTimeInMillis());
+        });
+
         dialogView.findViewById(R.id.studentEditSubmitButton).setOnClickListener(view -> {
 
             EditText studentFirstNameInput = dialogView
@@ -111,34 +119,25 @@ public class GroupDetailsActivity extends AppCompatActivity {
                     .findViewById(R.id.studentEditLastName3);
             EditText studentSecondNameInput = dialogView
                     .findViewById(R.id.studentEditSecondName3);
-            EditText studentBirthDateNameInput = dialogView
-                    .findViewById(R.id.studentEditBirthDate3);
 
             String studentFirstName = studentFirstNameInput.getText().toString();
             String studentLastName = studentLastNameInput.getText().toString();
             String studentSecondName = studentSecondNameInput.getText().toString();
-            String studentBirthDate = studentBirthDateNameInput.getText().toString();
+            long studentBirthDate = studentBirthDateNameInput.getDate();
 
             if (!studentFirstName.isEmpty()) {
                 if (!studentLastName.isEmpty()) {
                     if (!studentSecondName.isEmpty()) {
-                        if (!studentBirthDate.isEmpty()) {
-                            try {
-                                createStudent(
-                                        studentFirstName,
-                                        studentLastName,
-                                        studentSecondName,
-                                        studentBirthDate
-                                );
 
-                                studentInputDialog.cancel();
+                        createStudent(
+                                studentFirstName,
+                                studentLastName,
+                                studentSecondName,
+                                studentBirthDate
+                        );
 
-                            } catch (ParseException e) {
-                                studentBirthDateNameInput.setError("Неправильная дата");
-                            }
-                        } else {
-                            studentBirthDateNameInput.setError("Неправильная дата");
-                        }
+                        studentInputDialog.cancel();
+
                     } else {
                         studentSecondNameInput.setError("Неправильное отчество");
                     }
@@ -230,17 +229,12 @@ public class GroupDetailsActivity extends AppCompatActivity {
 
     void connectStudentsList() {
         mStudentsListView.setAdapter(
-                new ArrayAdapter<Student>(
+                new StudentListAdapter(
+                        mGroup,
                         this,
-                        android.R.layout.simple_list_item_1,
-                        mStudents
+                        (parent, view, position, id) -> editStudentActivityInvoke(position),
+                        (parent, view, position, id) -> deleteStudentDialog(position)
                 )
-        );
-        mStudentsListView.setOnItemLongClickListener(
-                (parent, view, position, id) -> deleteStudentDialog(position)
-        );
-        mStudentsListView.setOnItemClickListener(
-                (parent, view, position, id) -> editStudentActivityInvoke(position)
         );
     }
 
@@ -257,7 +251,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent(GroupDetailsActivity.this, StudentDetailsActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Student", selectedStudent);
+        bundle.putParcelable("Student", selectedStudent);
         intent.putExtras(bundle);
 
         mActivityResultLauncher.launch(intent);
@@ -280,7 +274,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent();
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Group", mGroup);
+        bundle.putParcelable("Group", mGroup);
         intent.putExtras(bundle);
 
         setResult(RESULT_OK, intent);

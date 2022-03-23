@@ -1,17 +1,18 @@
 package com.example.android_lab_2;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.android_lab_2.faculty.Student;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 
 public class StudentDetailsActivity extends AppCompatActivity {
 
@@ -20,12 +21,10 @@ public class StudentDetailsActivity extends AppCompatActivity {
     private EditText EditFirstName;
     private EditText EditSurname;
     private EditText EditMiddleName;
-    private EditText EditBirthDate;
+    private CalendarView EditBirthDate;
 
     private Button SubmitButton;
     private Button CancelButton;
-
-    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +33,7 @@ public class StudentDetailsActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        mStudent = (Student) bundle.getSerializable("Student");
+        mStudent = (Student) bundle.getParcelable("Student");
 
         EditFirstName = findViewById(R.id.studentEditFirstName);
         EditMiddleName = findViewById(R.id.studentEditSecondName);
@@ -44,20 +43,21 @@ public class StudentDetailsActivity extends AppCompatActivity {
         SubmitButton = findViewById(R.id.studentEditSubmitButton);
         CancelButton = findViewById(R.id.studentEditCancel);
 
+        EditBirthDate.setOnDateChangeListener((view, year, month, day) -> {
+            Calendar c = Calendar.getInstance();
+            c.set(year, month, day);
+            EditBirthDate.setDate(c.getTimeInMillis());
+            mStudent.setBirthdate(c);
+        });
+
         EditFirstName.setText(mStudent.getFirstname());
         EditSurname.setText(mStudent.getSurname());
         EditMiddleName.setText(mStudent.getMiddlename());
-        EditBirthDate.setText(
-                format.format(mStudent.getBirthdate()).toString()
-        );
+        EditBirthDate.setDate(mStudent.getBirthdate().getTimeInMillis());
 
         SubmitButton.setOnClickListener(view -> {
-            try {
-                editUser();
-                finishActivity();
-            } catch (ParseException e) {
-                EditBirthDate.setError("Некорректный ввод");
-            }
+            editUser();
+            finishActivity();
         });
 
         CancelButton.setOnClickListener(view -> {
@@ -67,24 +67,25 @@ public class StudentDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void editUser() throws ParseException {
+    private void editUser() {
 
-        Date birthDate = format.parse(EditBirthDate.getText().toString());
+        Calendar birthDate = Calendar.getInstance();
+        birthDate.setTimeInMillis(EditBirthDate.getDate());
 
         String firstName = EditFirstName.getText().toString();
-        if(firstName.isEmpty()) {
+        if (firstName.isEmpty()) {
             EditFirstName.setError("Некорректный ввод");
             return;
         }
 
         String surName = EditSurname.getText().toString();
-        if(surName.isEmpty()) {
+        if (surName.isEmpty()) {
             EditSurname.setError("Некорректный ввод");
             return;
         }
 
         String lastName = EditMiddleName.getText().toString();
-        if(lastName.isEmpty()) {
+        if (lastName.isEmpty()) {
             EditMiddleName.setError("Некорректный ввод");
             return;
         }
@@ -99,7 +100,7 @@ public class StudentDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent();
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Student", mStudent);
+        bundle.putParcelable("Student", mStudent);
         intent.putExtras(bundle);
 
         setResult(RESULT_OK, intent);
