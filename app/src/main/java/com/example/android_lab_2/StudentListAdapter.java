@@ -63,7 +63,6 @@ public class StudentListAdapter extends BaseAdapter {
         TextView nameText = newView.findViewById(R.id.evsNameText);
         TextView dateText = newView.findViewById(R.id.evsDateText);
         Button editButton = newView.findViewById(R.id.evsEditButton);
-        Button deleteButton = newView.findViewById(R.id.evsDeleteButton);
 
         Student currentStudent = mGroup.getStudents().get(i);
 
@@ -73,8 +72,9 @@ public class StudentListAdapter extends BaseAdapter {
         editButton.setOnClickListener(v -> {
             mEditCallback.onItemClick((AdapterView<?>) viewGroup, view, i, 0);
         });
-        deleteButton.setOnClickListener(v -> {
+        newView.setOnLongClickListener(v -> {
             mDeleteCallback.onItemClick((AdapterView<?>) viewGroup, view, i, 0);
+            return true;
         });
 
         return newView;

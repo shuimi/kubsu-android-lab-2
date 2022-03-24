@@ -1,7 +1,9 @@
 package com.example.android_lab_2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.android_lab_2.faculty.Faculty;
 import com.example.android_lab_2.faculty.Group;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,13 +34,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         mGroupsList = findViewById(R.id.GroupsList);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("faculty", MODE_PRIVATE);
+        mFaculty = new Gson().fromJson(sharedPreferences.getString("faculty", ""), Faculty.class);
 
         mActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if(result.getResultCode() == RESULT_OK){
+                    if (result.getResultCode() == RESULT_OK) {
 
                         Intent intent = result.getData();
                         Bundle bundle = intent.getExtras();
@@ -53,6 +61,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    @Override
+    protected void onDestroy() {
+        SharedPreferences.Editor editor = getSharedPreferences("faculty", MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(mFaculty);
+        editor.putString("faculty", json).apply();
+        super.onDestroy();
     }
 
     @Override
@@ -114,14 +131,14 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    void tweakNoFaculty(){
+    void tweakNoFaculty() {
         setTitle(mFaculty.getName());
         mMenu.findItem(R.id.miCreateFaculty).setVisible(false);
         mMenu.findItem(R.id.miDeleteFaculty).setVisible(true);
         mMenu.findItem(R.id.miAddGroup).setVisible(true);
     }
 
-    void tweakFacultyExists(){
+    void tweakFacultyExists() {
         setTitle("");
         mMenu.findItem(R.id.miCreateFaculty).setVisible(true);
         mMenu.findItem(R.id.miDeleteFaculty).setVisible(false);
@@ -144,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    void unmountGroupsList(){
+    void unmountGroupsList() {
         mGroupsList.setAdapter(null);
         mGroupsList.setOnItemClickListener(null);
         mGroupsList.setOnItemLongClickListener(null);
