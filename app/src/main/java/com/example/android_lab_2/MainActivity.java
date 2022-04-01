@@ -3,7 +3,6 @@ package com.example.android_lab_2;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.android_lab_2.faculty.Faculty;
 import com.example.android_lab_2.faculty.Group;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +27,13 @@ public class MainActivity extends AppCompatActivity {
     private Menu mMenu;
     private ListView mGroupsList;
 
-    private ActivityResultLauncher mActivityResultLauncher;
+    private ActivityResultLauncher mGroupResultLauncher;
+
+    // нераспределённые студенты - в main activity в menu,
+    // также список таких студентов
+    // студентов можно редактировать
+    // сделать возможность назначения группы, пункт меню в student edit activity
+    // по нажатию всплывашка, но без реализации
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mGroupsList = findViewById(R.id.GroupsList);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("faculty", MODE_PRIVATE);
-        mFaculty = new Gson().fromJson(sharedPreferences.getString("faculty", ""), Faculty.class);
+        SharedPreferences sharedPrefs = getSharedPreferences("FACULTY", MODE_PRIVATE);
+        mFaculty = new Gson().fromJson(sharedPrefs.getString("FACULTY", ""), Faculty.class);
 
-        mActivityResultLauncher = registerForActivityResult(
+        mGroupResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
@@ -51,7 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
                         Group group = (Group) bundle.getParcelable("Group");
 
-                        mFaculty.setGroup(group.getID(), group);
+                        if (mFaculty.getUndistributedGroup().getID().equals(group.getID())) {
+                            mFaculty.setUndistributedGroup(group);
+                        }
+                        else {
+                            mFaculty.setGroup(group.getID(), group);
+                        }
 
                         Toast.makeText(
                                 getApplicationContext(),
@@ -61,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
     }
 
     @Override
     protected void onDestroy() {
-        SharedPreferences.Editor editor = getSharedPreferences("faculty", MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences("FACULTY", MODE_PRIVATE).edit();
         Gson gson = new Gson();
-        String json = gson.toJson(mFaculty);
-        editor.putString("faculty", json).apply();
+        editor.putString("FACULTY", gson.toJson(mFaculty)).apply();
         super.onDestroy();
     }
 
@@ -78,9 +87,21 @@ public class MainActivity extends AppCompatActivity {
         mMenu = menu;
         mMenu.findItem(R.id.miAddGroup).setVisible(false);
         menu.findItem(R.id.miDeleteFaculty).setVisible(false);
+        updateFaculty();
         return super.onCreateOptionsMenu(menu);
     }
 
+    public void onUndistributedStudentsClick() {
+        Group selectedGroup = mFaculty.getUndistributedGroup();
+
+        Intent intent = new Intent(MainActivity.this, GroupDetailsActivity.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("Group", selectedGroup);
+        intent.putExtras(bundle);
+
+        mGroupResultLauncher.launch(intent);
+    }
 
     public void exitDialog() {
         AlertDialog.Builder exitDialog = new AlertDialog.Builder(MainActivity.this);
@@ -126,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putParcelable("Group", selectedGroup);
         intent.putExtras(bundle);
 
-        mActivityResultLauncher.launch(intent);
+        mGroupResultLauncher.launch(intent);
 
         return true;
     }
@@ -297,6 +318,10 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.miAddGroup: {
                 groupAddDialog();
+                return true;
+            }
+            case R.id.miUndistributed: {
+                onUndistributedStudentsClick();
                 return true;
             }
             default: {

@@ -13,6 +13,9 @@
         android:title="@string/MenuAddGroupText"
         android:visible="true" />
     <item
+        android:id="@+id/miUndistributed"
+        android:title="@string/UNDISTRIBUTED_TEXT" />
+    <item
         android:id="@+id/miDeleteFaculty"
         android:title="@string/DeleteFacultyText" />
     <item

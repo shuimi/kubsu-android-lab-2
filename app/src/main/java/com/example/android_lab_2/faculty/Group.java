@@ -13,6 +13,8 @@ public class Group implements Parcelable {
     private String mName;
     private ArrayList<Student> mStudents;
 
+    private boolean forUndistributed;
+
     public Group(String name) {
         mName = name;
         mStudents = new ArrayList<Student>();

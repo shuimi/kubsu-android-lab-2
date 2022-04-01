@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class Faculty {
 
     private String mName;
-    private ArrayList<Group> mGroups;
+    private final ArrayList<Group> mGroups;
+    private final Group mUndistributedGroup;
 
     public Faculty(String name) {
         mName = name;
         mGroups = new ArrayList<Group>();
+        mUndistributedGroup = new Group("Не распределены");
     }
 
     public Group findStudentGroup(Student student) {
@@ -21,7 +23,7 @@ public class Faculty {
         return null;
     }
 
-    public Group getGroup(int position){
+    public Group getGroup(int position) {
         return mGroups.get(position);
     }
 
@@ -42,13 +44,17 @@ public class Faculty {
     }
 
     public void clearGroups() {
-        for (Group g: mGroups){
+        for (Group g : mGroups) {
             g = null;
         }
     }
 
-    public void deleteGroup(int id){
+    public void deleteGroup(int id) {
         mGroups.remove(id);
+    }
+
+    public Group getUndistributedGroup() {
+        return mUndistributedGroup;
     }
 
     public void setGroup(Long groupID, Group group) {
@@ -59,5 +65,9 @@ public class Faculty {
                 break;
             }
         }
+    }
+
+    public void setUndistributedGroup(Group group) {
+        mUndistributedGroup.setStudents(group.getStudents());
     }
 }

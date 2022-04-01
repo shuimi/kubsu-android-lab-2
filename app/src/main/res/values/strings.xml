@@ -16,4 +16,5 @@
     <string name="StudentDetailsBirthDate">Дата рождения</string>
     <string name="StudentDetailsEditText">Подтвердить</string>
     <string name="StudentDetailsCancelText">Отмена</string>
+    <string name="UNDISTRIBUTED_TEXT">Не расределены</string>
 </resources>
